@@ -1,0 +1,277 @@
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv2_4/kernel:0' shape=(3, 3, 128, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv3_4/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv3_4/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv3_4/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv3_4/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv1_4/kernel:0' shape=(1, 1, 512, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv3_4/kernel:0' shape=(1, 1, 128, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv2_4/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv2_4/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv2_4/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv2_4/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv1_4/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv1_4/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv1_4/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_2/bottleneck_v1/conv1_4/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv3_6/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv3_6/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv3_6/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv3_6/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv2_6/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv2_6/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv2_6/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv2_6/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv1_6/kernel:0' shape=(1, 1, 512, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv2_6/kernel:0' shape=(3, 3, 128, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv1_6/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv1_6/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv1_6/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv1_6/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_4/bottleneck_v1/conv3_6/kernel:0' shape=(1, 1, 128, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv2_3/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv2_3/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv2_3/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv2_3/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/shortcut_2/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/shortcut_2/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/shortcut_2/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/shortcut_2/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv2_3/kernel:0' shape=(3, 3, 128, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv1_3/kernel:0' shape=(1, 1, 256, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv1_3/batch_norm_1/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv1_3/batch_norm_1/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv1_3/batch_norm_1/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv1_3/batch_norm_1/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv3_3/kernel:0' shape=(1, 1, 128, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/shortcut_2/kernel:0' shape=(1, 1, 256, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv3_3/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv3_3/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv3_3/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_1/bottleneck_v1/conv3_3/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv1_5/kernel:0' shape=(1, 1, 512, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv2_5/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv2_5/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv2_5/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv2_5/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv2_5/kernel:0' shape=(3, 3, 128, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv3_5/kernel:0' shape=(1, 1, 128, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv1_5/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv1_5/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv1_5/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv1_5/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv3_5/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv3_5/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv3_5/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block2/unit_3/bottleneck_v1/conv3_5/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_2/kernel:0' shape=(3, 3, 64, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_3/kernel:0' shape=(3, 3, 64, 128) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv3_13/batch_norm/gamma:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv3_13/batch_norm/beta:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv3_13/batch_norm/moving_mean:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv3_13/batch_norm/moving_var:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/shortcut_6/batch_norm/gamma:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/shortcut_6/batch_norm/beta:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/shortcut_6/batch_norm/moving_mean:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/shortcut_6/batch_norm/moving_var:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv2_13/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv2_13/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv2_13/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv2_13/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv3_13/kernel:0' shape=(1, 1, 512, 2048) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/shortcut_6/kernel:0' shape=(1, 1, 1024, 2048) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv2_13/kernel:0' shape=(3, 3, 512, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv1_13/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv1_13/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv1_13/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv1_13/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_1/bottleneck_v1/conv1_13/kernel:0' shape=(1, 1, 1024, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv2_14/kernel:0' shape=(3, 3, 512, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv3_14/batch_norm/gamma:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv3_14/batch_norm/beta:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv3_14/batch_norm/moving_mean:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv3_14/batch_norm/moving_var:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv1_14/kernel:0' shape=(1, 1, 2048, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv2_14/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv2_14/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv2_14/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv2_14/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv1_14/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv1_14/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv1_14/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv1_14/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_2/bottleneck_v1/conv3_14/kernel:0' shape=(1, 1, 512, 2048) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv2_15/kernel:0' shape=(3, 3, 512, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv3_15/kernel:0' shape=(1, 1, 512, 2048) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv1_15/kernel:0' shape=(1, 1, 2048, 512) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv1_15/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv1_15/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv1_15/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv1_15/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv2_15/batch_norm/gamma:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv2_15/batch_norm/beta:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv2_15/batch_norm/moving_mean:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv2_15/batch_norm/moving_var:0' shape=(512,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv3_15/batch_norm/gamma:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv3_15/batch_norm/beta:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv3_15/batch_norm/moving_mean:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block4/unit_3/bottleneck_v1/conv3_15/batch_norm/moving_var:0' shape=(2048,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv3_2/kernel:0' shape=(1, 1, 64, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv2_2/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv2_2/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv2_2/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv2_2/batch_norm/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv1_2/kernel:0' shape=(1, 1, 256, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv3_2/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv3_2/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv3_2/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv3_2/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv1_2/batch_norm_1/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv1_2/batch_norm_1/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv1_2/batch_norm_1/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv1_2/batch_norm_1/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_3/bottleneck_v1/conv2_2/kernel:0' shape=(3, 3, 64, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv1_1/kernel:0' shape=(1, 1, 256, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv3_1/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv3_1/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv3_1/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv3_1/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv2_1/kernel:0' shape=(3, 3, 64, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv1_1/batch_norm_1/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv1_1/batch_norm_1/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv1_1/batch_norm_1/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv1_1/batch_norm_1/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv3_1/kernel:0' shape=(1, 1, 64, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv2_1/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv2_1/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv2_1/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_2/bottleneck_v1/conv2_1/batch_norm/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/shortcut/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/shortcut/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/shortcut/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/shortcut/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv3/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv3/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv3/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv3/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv3/kernel:0' shape=(1, 1, 64, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv1/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv1/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv1/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv1/batch_norm/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/shortcut/kernel:0' shape=(1, 1, 128, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv2/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv2/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv2/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv2/batch_norm/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv2/kernel:0' shape=(3, 3, 64, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/block1/unit_1/bottleneck_v1/conv1/kernel:0' shape=(1, 1, 128, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/logits/kernel:0' shape=(1, 1, 2048, 1001) dtype=float32>
+<tf.Variable 'resnet_v1_50/logits/bias:0' shape=(1001,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv3_8/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv3_8/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv3_8/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv3_8/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv2_8/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv1_8/kernel:0' shape=(1, 1, 1024, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv1_8/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv1_8/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv1_8/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv1_8/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv3_8/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv2_8/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv2_8/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv2_8/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_2/bottleneck_v1/conv2_8/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv3_10/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv2_10/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv2_10/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv2_10/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv2_10/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv2_10/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv3_10/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv3_10/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv3_10/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv3_10/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv1_10/kernel:0' shape=(1, 1, 1024, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv1_10/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv1_10/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv1_10/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_4/bottleneck_v1/conv1_10/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv1_11/kernel:0' shape=(1, 1, 1024, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv1_11/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv1_11/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv1_11/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv1_11/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv2_11/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv3_11/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv3_11/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv3_11/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv3_11/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv2_11/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv2_11/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv2_11/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv2_11/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_5/bottleneck_v1/conv3_11/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv1_12/kernel:0' shape=(1, 1, 1024, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv3_12/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv3_12/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv3_12/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv3_12/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv2_12/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv3_12/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv1_12/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv1_12/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv1_12/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv1_12/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv2_12/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv2_12/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv2_12/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_6/bottleneck_v1/conv2_12/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv1_9/kernel:0' shape=(1, 1, 1024, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv1_9/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv1_9/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv1_9/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv1_9/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv3_9/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv2_9/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv2_9/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv2_9/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv2_9/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv3_9/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv3_9/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv3_9/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv3_9/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_3/bottleneck_v1/conv2_9/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv2_7/kernel:0' shape=(3, 3, 256, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv3_7/kernel:0' shape=(1, 1, 256, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv1_7/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv1_7/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv1_7/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv1_7/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/shortcut_4/kernel:0' shape=(1, 1, 512, 1024) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/shortcut_4/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/shortcut_4/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/shortcut_4/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/shortcut_4/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv2_7/batch_norm/gamma:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv2_7/batch_norm/beta:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv2_7/batch_norm/moving_mean:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv2_7/batch_norm/moving_var:0' shape=(256,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv3_7/batch_norm/gamma:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv3_7/batch_norm/beta:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv3_7/batch_norm/moving_mean:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv3_7/batch_norm/moving_var:0' shape=(1024,) dtype=float32>
+<tf.Variable 'resnet_v1_50/block3/unit_1/bottleneck_v1/conv1_7/kernel:0' shape=(1, 1, 512, 256) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_2/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_2/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_2/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_2/batch_norm/moving_var:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_1/kernel:0' shape=(3, 3, 3, 64) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_3/batch_norm/gamma:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_3/batch_norm/beta:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_3/batch_norm/moving_mean:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_3/batch_norm/moving_var:0' shape=(128,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_1/batch_norm/gamma:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_1/batch_norm/beta:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_1/batch_norm/moving_mean:0' shape=(64,) dtype=float32>
+<tf.Variable 'resnet_v1_50/conv1_1/batch_norm/moving_var:0' shape=(64,) dtype=float32>
