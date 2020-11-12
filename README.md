@@ -9,7 +9,7 @@ A lib whose framework learned from keras and chainer for more convenient persona
 # General Introduction
  This lib has similar structure as keras does, but not powerful and rich as keras, it's more like a low
  configuration "keras" which extremely constraint with my personal developing purposes, besides, the core
- components are not all keras-like style, they has learned from some features of Chainer and Pytorch (e.g.
+ components are not all keras-like style, they have learned from some features of Chainer and Pytorch (e.g.
  hook mechanism around layer and trainer, a MutableSequence-style LayerList as Chainer does, Pytorch-way
  to control trainable flag...), one thing I must mention is the argument scope in slim also merged into
  this lib, and it has been modified to compatible with function and class in the same time.
