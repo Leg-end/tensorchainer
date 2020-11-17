@@ -108,10 +108,8 @@ class Network(Layer):
             keys = list(kwargs.keys())
             for key in keys:
                 if isinstance(kwargs[key], Layer):
-                    self.add_layer(key, kwargs[key])
-                    kwargs.pop(key)
+                    self.add_layer(key, kwargs.pop(key))
             super(Network, self).__init__(**kwargs)
-            self.local_hooks['LocalHook'].build = False
 
     def __setattr__(self, name: str, value):
         if isinstance(value, Layer) or (isinstance(value, (list, tuple)) and all(

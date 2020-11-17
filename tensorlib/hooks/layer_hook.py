@@ -1,4 +1,5 @@
 from tensorlib.engine import base_hook
+from tensorlib.engine.base_layer import LayerList
 from tensorflow.python import ops
 from tensorflow.python.ops import gen_array_ops
 from tensorlib.engine import graph_ops
@@ -38,13 +39,13 @@ def check_input(inputs):
 
 class LocalHook(base_hook.Hook):
     name = 'LocalHook'
-    build = True
 
     def before_forward(self, layer, inputs, kwargs):
         check_input(inputs)
 
     def after_forward(self, layer, outputs, inputs, kwargs):
-        if self.build:
+        # Only a graph network or a simple layer can convert to a node
+        if hasattr(layer, '_graph') or not isinstance(layer, LayerList):
             graph_ops.build_node(layer, inputs, outputs, kwargs)
 
 

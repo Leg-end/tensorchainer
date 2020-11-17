@@ -91,11 +91,7 @@ class Layer(object):
         self._local_hooks = OrderedDict()
         self._built = False
         self.activation = activation_ops.get(activation)
-        allowed_kwargs = {'dtype',
-                          'name',
-                          '__config__',
-                          'trainable'}
-        validate_kwargs(kwargs, allowed_kwargs)
+        validate_kwargs(kwargs, {'dtype', 'name', '__config__', 'trainable'})
         # For serialization, recorded params in __init__
         self._config = kwargs.get('__config__', {})
         # self.name = kwargs.get('name', self.__class__.__name__)
@@ -328,7 +324,6 @@ class LayerList(Layer, MutableSequence):
         self._children = []
         for layer in layers:
             self.add_layer(layer)
-        self.local_hooks['LocalHook'].build = False
 
     def __len__(self):
         return len(self._children)
