@@ -1,2 +1,2 @@
-import keras
-keras.backend.get_session()
+from tensorflow.contrib import slim
+slim.conv2d

@@ -1,5 +1,4 @@
 from tensorlib.engine import base_hook
-from tensorlib.engine.base_layer import LayerList
 from tensorflow.python import ops
 from tensorflow.python.ops import gen_array_ops
 from tensorlib.engine import graph_ops
@@ -37,6 +36,10 @@ def check_input(inputs):
         #                      " tensor should be computed from an instance of Layer)")
 
 
+class EmptyHook(base_hook.Hook):
+    name = 'EmptyHook'
+
+
 class LocalHook(base_hook.Hook):
     name = 'LocalHook'
 
@@ -44,6 +47,7 @@ class LocalHook(base_hook.Hook):
         check_input(inputs)
 
     def after_forward(self, layer, outputs, inputs, kwargs):
+        from tensorlib.engine.base_layer import LayerList
         # Only a graph network or a simple layer can convert to a node
         if hasattr(layer, '_graph') or not isinstance(layer, LayerList):
             graph_ops.build_node(layer, inputs, outputs, kwargs)
@@ -80,7 +84,7 @@ class ExtractHook(base_hook.Hook):
     """
     name = 'ExtractHook'
 
-    def __init__(self, in_names, out_names, prefix=''):
+    def __init__(self, out_names, in_names=None, prefix=''):
         self.in_names = [prefix + name for name in to_list(in_names)] if in_names else []
         if out_names is None:
             raise ValueError("Export layers' names can not be None")

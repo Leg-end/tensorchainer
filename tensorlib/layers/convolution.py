@@ -221,7 +221,6 @@ class Conv2DTranspose(Conv2D):
     def __init__(self,
                  out_channels,
                  kernel_size,
-                 in_channels=None,
                  spatial_size=None,
                  strides=(1, 1),
                  padding='SAME',
@@ -239,7 +238,6 @@ class Conv2DTranspose(Conv2D):
                  **kwargs):
         super(Conv2DTranspose, self).__init__(activation=activation,
                                               out_channels=out_channels,
-                                              in_channels=in_channels,
                                               kernel_size=kernel_size,
                                               strides=strides,
                                               padding=padding,

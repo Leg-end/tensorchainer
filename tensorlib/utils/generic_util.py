@@ -10,6 +10,7 @@ import re
 import collections
 import numpy as np
 import time
+import platform
 
 try:
     import ipykernel
@@ -20,15 +21,16 @@ except ImportError:
         print("Install `ipykernel` failed")
     else:
         print("Successfully install `ipykernel`")
-try:
-    import posix
-except ImportError:
-    print("Installing `posix`")
-    res = os.system("pip install posix")
-    if res != 0:
-        print("Install `posix` failed")
-    else:
-        print("Successfully install `posix`")
+if platform.system().lower() == 'linux':
+    try:
+        import posix
+    except ImportError:
+        print("Installing `posix`")
+        res = os.system("pip install posix")
+        if res != 0:
+            print("Install `posix` failed")
+        else:
+            print("Successfully install `posix`")
 
 __all__ = ["to_list", "to_tuple",
            "unpack_singleton", "object_list_uid",

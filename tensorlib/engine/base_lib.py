@@ -533,7 +533,7 @@ def conv2d_transpose(x,
         output_shape[0] = int_shape(x)[0]
     if dilation_rate == (1, 1):
         x = nn.conv2d_transpose(value=x,
-                                filters=kernel,
+                                filter=kernel,
                                 output_shape=output_shape,
                                 strides=strides,
                                 padding=padding,
