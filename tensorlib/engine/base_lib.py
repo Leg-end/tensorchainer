@@ -522,7 +522,7 @@ def bias_add(value, bias, data_format='NHWC'):
 
 def conv2d_transpose(x,
                      kernel,
-                     output_shape,
+                     output_shape: tuple,
                      strides=(1, 1),
                      padding='VALID',
                      data_format='NHWC',
@@ -530,7 +530,8 @@ def conv2d_transpose(x,
     strides = (1,) + strides + (1,) if data_format[-1] == 'C'\
         else (1, 1) + strides
     if output_shape[0] is None:
-        output_shape[0] = int_shape(x)[0]
+        batch = int_shape(x)[0]
+        output_shape = (batch if batch else -1,) + output_shape[1:]
     if dilation_rate == (1, 1):
         x = nn.conv2d_transpose(value=x,
                                 filter=kernel,

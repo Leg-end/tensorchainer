@@ -129,30 +129,52 @@ class Network(Layer):
             self._children.discard(name)
         super(Network, self).__delattr__(name)
 
-    def layers(self, skip_self: bool = False):
-        if not skip_self:
-            yield self
-        for child in self.children():
-            for layer in child.layers():
-                yield layer
-
     def add_layer(self, name: str, layer: Layer):
         setattr(self, name, layer)
 
+    def get_layer(self, name=None, index=None):
+        """
+        Retrieves layer based on either its name, or index, but name first
+        Retrieve order in topological graph traversal when by index(Note:
+        Topological graph must build first)
+        :param name: str
+        :param index: int
+        :return: layer
+        """
+        if name is not None:
+            for layer in self.layers(skip_self=True):
+                if name == layer.name:
+                    return layer
+            raise KeyError("No such layer: " + name)
+        if self._graph is None:
+            raise ValueError("Topological index retrieving only available after"
+                             " building a topological graph of this network: " + self.name)
+        elif index is None:
+            raise ValueError("Provide either name or index for retrieving")
+        else:
+            assert index >= 0
+            if index > len(self._graph.children):
+                raise ValueError("Requested to retrieve layer at index: " + str(index)
+                                 + ", but model only has " + str(len(self._graph.children)) + ' layers')
+            else:
+                return self._graph.children[index]
+
     def children(self) -> tp.Iterator[Layer]:
         if self._graph:
-            for child in self._graph.children:
+            # foreach in topological order
+            for child in sorted(set(self._graph.children), key=self._graph.children.index):
                 yield child
         else:
             d = self.__dict__
             for name in sorted(self._children):
                 yield d[name]
 
-    def get_layer(self, name):
-        for layer in self.layers(skip_self=True):
-            if name == layer.name:
-                return layer
-        raise KeyError('Layer named `%s` does not exist' % name)
+    def layers(self, skip_self: bool = False):
+        if not skip_self:
+            yield self
+        for child in self.children():
+            for layer in child.layers():
+                yield layer
 
     def forward(self, *inputs, **kwargs):
         if not self._graph:

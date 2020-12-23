@@ -512,7 +512,7 @@ if __name__ == '__main__':
     #     for node in nodes:
     #         for weight in node.downstream_layer.weights:
     #             print(weight)
-    extract_blocks = ['pool1', 'block1/unit_2/lite_bottleneck_v1/add',
+    ext_blocks = ['pool1', 'block1/unit_2/lite_bottleneck_v1/add',
                       'block2/unit_2/lite_bottleneck_v1/add',
                       'block3/unit_2/lite_bottleneck_v1/add',
                       'block4/unit_2/lite_bottleneck_v1/add']

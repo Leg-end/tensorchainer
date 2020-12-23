@@ -8,10 +8,14 @@ __all__ = ['get_frozen_graph', 'load_graph']
 def get_frozen_graph(saver,
                      graph,
                      model_dir,
-                     output_name='outputs'):
+                     output_name='outputs',
+                     gpu_devices=None):
     if not os.path.exists(model_dir):
         raise ValueError("Model dir can not be none.")
     del tf.get_collection_ref(tf.GraphKeys.TRAIN_OP)[:]
+    if gpu_devices:
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     checkpoint = tf.train.get_checkpoint_state(model_dir)
     ckpt_path = checkpoint.model_checkpoint_path.replace('\\', '/')
     abs_dir = '/'.join(ckpt_path.split('/')[:-1])

@@ -394,6 +394,28 @@ class LayerList(Layer, MutableSequence):
     def add_layer(self, layer: Layer):
         self.append(layer)
 
+    def get_layer(self, name=None, index=None):
+        """
+        Retrieves layer based on either its name,
+         or index(in linear order), but index first
+        :param name: str
+        :param index: int
+        :return: layer
+        """
+        if index is not None:
+            assert index >= 0
+            if index > len(self):
+                raise ValueError("Requested to retrieve layer at index: " + str(index)
+                                 + ", but model only has " + str(len(self)) + ' layers')
+            else:
+                return self[index]
+        if not name:
+            raise ValueError("Provide either name or index for retrieving")
+        for layer in self.layers():
+            if name == layer.name:
+                return layer
+        raise ValueError("No such layer: " + name)
+
     def remove_by_layer_type(self, type_name):
         [self.remove(layer) for layer in self
          if layer.__class__.__name__ == type_name]

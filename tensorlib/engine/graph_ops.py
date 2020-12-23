@@ -92,8 +92,11 @@ class GraphNetwork(object):
 
 
 def build_graph_network(network, inputs, outputs):
-    children = set()
+    children = list()  # topological order
     nodes = set()
+    # In order to maintain depth information of nodes,
+    # we decide not to use topological structure to store nodes,
+    # instead, we use a nest list to store nodes depth-wise
     nodes_by_depth = []
     out_nodes = [getattr(x, '_anchor')[0] for x in flatten_list(outputs)]
     out_ids = nest.map_structure(lambda x:  getattr(x, '_anchor')[1], outputs)
@@ -113,7 +116,7 @@ def build_graph_network(network, inputs, outputs):
                 continue
             nodes_by_depth[-1].append(node)
             nodes.add(node)
-            children.add(node.layer)
+            children.append(node.layer)
             next_depth.extend(node.out_degree)
         cur_depth = next_depth
     return GraphNetwork(network=network,

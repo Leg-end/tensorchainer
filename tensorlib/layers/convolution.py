@@ -263,7 +263,7 @@ class Conv2DTranspose(Conv2D):
         self.output_padding = output_padding
         self.output_shape = None
         if spatial_size is not None:
-            spatial_size = list(normalize_tuple(spatial_size, 2, 'spatial_size'))
+            spatial_size = normalize_tuple(spatial_size, 2, 'spatial_size')
         self.spatial_size = spatial_size
 
     def build(self, input_shape):
@@ -281,14 +281,14 @@ class Conv2DTranspose(Conv2D):
                              "but received {}".format(str(in_channels)))
         if self.spatial_size is None:
             # Infer dynamic spatial size
-            self.spatial_size = [
+            self.spatial_size = tuple(
                 deconv_output_length(
                     input_size[i], self.kernel_size[i],
                     self.strides[i], self.padding,
                     self.output_padding[i], self.dilation_rate[i])
-                for i in range(len(input_size))]
-        self.output_shape = (input_shape[0],) + tuple(self.spatial_size) + (in_channels,) \
-            if channel_axis == -1 else (input_shape[0], in_channels) + tuple(self.spatial_size)
+                for i in range(len(input_size)))
+        self.output_shape = (input_shape[0],) + self.spatial_size + (in_channels,) \
+            if channel_axis == -1 else (input_shape[0], in_channels) + self.spatial_size
         kernel_shape = self.kernel_size + (self.out_channels, in_channels)
         self.kernel = self.add_weight(shape=kernel_shape,
                                       initializer=self.kernel_initializer,
