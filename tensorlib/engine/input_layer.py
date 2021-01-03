@@ -1,6 +1,6 @@
 from tensorlib.engine.base_layer import Layer, param_tracker
+from tensorlib.engine.base_lib import placeholder
 from tensorlib.engine.graph_ops import build_node
-from tensorflow.initializers import ones
 from tensorflow.python.framework import tensor_shape
 
 __all__ = ["InputLayer", "Input"]
@@ -26,7 +26,9 @@ class InputLayer(Layer):
             elif isinstance(input_shape, int):
                 input_shape = (input_shape,)
             batch_input_shape = (batch_size or 1,) + input_shape
-        input_tensor = ones(dtype=self.dtype)(batch_input_shape)
+        input_tensor = placeholder(shape=batch_input_shape,
+                                   dtype=dtype, name=self.name)
+        # input_tensor = ones(dtype=self.dtype)(batch_input_shape)
         setattr(input_tensor, '_anchor', (None, 0))
         build_node(layer=self,
                    inputs=[input_tensor],
