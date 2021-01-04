@@ -1,2 +1,2 @@
-from tensorflow.contrib import slim
-slim.conv2d
+from tensorflow import keras
+keras.Model.load_weights()

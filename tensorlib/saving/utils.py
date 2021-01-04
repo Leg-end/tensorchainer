@@ -1,11 +1,12 @@
 import h5py
 from tensorlib.engine.base_layer import Layer
 from tensorlib.engine.base_lib import batch_set_value, get_session
-from tensorlib.utils import to_list
 from distutils.version import LooseVersion
 from inspect import isgeneratorfunction
 from tensorflow import logging
-from tensorflow import train
+from tensorflow.python.ops import array_ops
+from tensorflow.python.framework import ops as fops
+from tensorflow.python import pywrap_tensorflow
 
 
 def _check_version():
@@ -30,8 +31,8 @@ def get_weight_value(weights):
         return [v.numpy() for v in var_list]
 
 
-def save_hdf5_weights(file_path, lib_model):
-    with h5py.File(file_path, "w")as f:
+def save_hdf5_weights(filepath, lib_model):
+    with h5py.File(filepath, "w")as f:
         _save_weights_to_hdf5_group(f, lib_model.layers())
 
 
@@ -55,13 +56,18 @@ def _save_weights_to_hdf5_group(f, layers):
                     val_dataset[:] = val
         else:
             raise Exception("Only layer can be saved into hdf5")
+        
+
+def is_hdf5_format(filepath):
+    return (filepath.endswith('.h5') or
+            filepath.endswith('.hdf5'))
 
 
-def load_hdf5_weights(file_path,
+def load_hdf5_weights(filepath,
                       lib_model,
                       allow_skip=False):
     import warnings
-    f = h5py.File(file_path, 'r')
+    f = h5py.File(filepath, 'r')
     try:
         layer_names = [n.decode('utf8') for n in f.attrs["layer_names"]]
     except Exception:
@@ -113,20 +119,20 @@ def _load_weights_from_hdf5_group(f, layers, allow_skip=False):
     return weight_tuples
 
 
-def _get_checkpoint_filename(file_path):
+def _get_checkpoint_filename(filepath):
     from tensorflow.python.lib.io.file_io import is_directory
     from tensorflow.python.training.checkpoint_management import latest_checkpoint
-    if is_directory(file_path):
-        file_path = latest_checkpoint(file_path)
-    if file_path is None:
+    if is_directory(filepath):
+        filepath = latest_checkpoint(filepath)
+    if filepath is None:
         raise ValueError("Couldn't find 'checkpoint' file or checkpoints in "
-                         "given directory %s" % file_path)
-    return file_path
+                         "given directory %s" % filepath)
+    return filepath
 
 
-def _load_checkpoint(file_path):
+def _load_checkpoint(filepath):
     from tensorflow.python.pywrap_tensorflow_internal import NewCheckpointReader
-    filename = _get_checkpoint_filename(file_path)
+    filename = _get_checkpoint_filename(filepath)
     return NewCheckpointReader(filename)
 
 
@@ -136,61 +142,53 @@ def _normalize_name(name):
     return name
 
 
-def _get_vars_to_restore(model_vars, prefixes, vars_to_shape):
-    restore_vars = dict()
+def _load_weights_from_group(variables, reader, prefix=''):
+    vars_to_shape = reader.get_variable_to_shape_map()
+    _vars_to_restore = dict()
     skip_vars = []
-    state = dict()
-    for prefix in prefixes:
-        state[prefix] = 0
-    for var in model_vars:
-        name = var.name[:-2]
-        shape = var.shape.as_list()
+    if prefix:
+        index = variables[0].find(prefix)
+        if index != 0:
+            import warnings
+            warnings.warn("Prefix %s starts from %d in var name which"
+                          " isn't in the start of var name" % (prefix, index))
+    for var in variables:
+        var_name = var.name[:-2].replace(prefix, '', 1)
+        var_shape = var.shape.as_list()
+
         skip_var = True
-        for prefix in prefixes:
-            name = name.replace(prefix, '')
-            if name in vars_to_shape and vars_to_shape[name] == shape:
-                restore_vars[name] = var
-                state[prefix] += 1
-                skip_var = False
-                break
+
+        if var_name in vars_to_shape and vars_to_shape[var_name] == var_shape:
+            _vars_to_restore[var] = reader.get_tensor(var_name)
+            skip_var = False
         if skip_var:
             skip_vars.append(var)
 
-    return restore_vars, skip_vars, state
+    return _vars_to_restore, skip_vars
 
 
-def load_checkpoint_weights(file_path, lib_model, prefixes=None):
-    if prefixes is None:
-        prefixes = ''
-    prefixes = to_list(prefixes)
-    reader = _load_checkpoint(file_path)
-    weights = list(lib_model.weights)
-    vars_to_shape = reader.get_variable_to_shape_map()
-    restored_vars, skipped_vars, stated = _get_vars_to_restore(
-        weights, prefixes, vars_to_shape)
-    for prefix, num in stated.items():
-        logging.info("For the prefix '{0}' were found {1} weights".format(prefix, num))
-    try:
-        train.init_from_checkpoint(file_path, restored_vars)
-        logging.info("Values were loaded for {} tensors!".format(len(restored_vars.keys())))
-        logging.info("Values were not loaded for {} tensors:".format(len(skipped_vars)))
-        for var in skipped_vars:
-            logging.info("skip values {}".format(var))
-    except ValueError as exception:
-        logging.error("Weights was not loaded at all!")
-        logging.error(exception)
-        exit(1)
-
-
-# def load_checkpoint_weights(file_path, lib_model, global_step=None):
-#     import warnings
-#     reader = _load_checkpoint(file_path)
-#     if global_step is not None:
-#         value = reader.get_tensor(_normalize_name(global_step.op.name))
-#         global_step.assign(value)
-#     for var in lib_model.weights:
-#         if reader.has_tensor(_normalize_name(var.op.name)):
-#             var_value = reader.get_tensor(_normalize_name(var.op.name))
-#             var.assign(var_value)
-#         else:
-#             warnings.warn('Variable %s missing in checkpoint %s', var, file_path)
+def load_ckpt_weights(filepath, prefix=''):
+    from tensorlib.engine.base_lib import get_session
+    variables = fops.get_collection(fops.GraphKeys.GLOBAL_VARIABLES)
+    reader = pywrap_tensorflow.NewCheckpointReader(filepath)
+    vars_to_restore, skip_vars = _load_weights_from_group(
+        variables, reader, prefix)
+    assign_ops = []
+    feed_dict = {}
+    for var, value in vars_to_restore.items():
+        if hasattr(var, '_assign_placeholder'):
+            assign_placeholder = var._assign_placeholder
+            assign_op = var._assign_op
+        else:
+            assign_placeholder = array_ops.placeholder(var.dtype, shape=value.shape)
+            assign_op = var.assign(assign_placeholder)
+            var._assign_placeholder = assign_placeholder
+            var._assign_op = assign_op
+        assign_ops.append(assign_op)
+        feed_dict[assign_placeholder] = value
+    get_session().run(assign_ops, feed_dict=feed_dict)
+    logging.info("Restore weights from {}".format(filepath))
+    logging.info("Values were loaded for {} tensors!".format(len(vars_to_restore.keys())))
+    logging.info("Values were not loaded for {} tensors:".format(len(skip_vars)))
+    for var in skip_vars:
+        logging.info(" skip model vars:{}".format(var))

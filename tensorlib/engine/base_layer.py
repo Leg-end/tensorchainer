@@ -12,6 +12,7 @@ from _collections_abc import MutableSequence
 from tensorflow.python import ops
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework import ops as fops
+from tensorflow.python.framework import errors_impl
 from tensorflow.python.ops import variables
 from tensorflow.python.util.function_utils import tf_inspect
 from tensorflow.python.util import nest
@@ -264,28 +265,27 @@ class Layer(object):
         else:
             raise KeyError('Hook %s does not exist' % name)
 
-    def load_weights(self, file_path, allow_skip=False, prefixes=None):
-        from tensorlib.saving.utils import load_hdf5_weights, load_checkpoint_weights
-        suffix = file_path[file_path.rfind('.')+1:]
-        if suffix.startswith('hdf5') or suffix.startswith('h5'):
-            if not os.path.exists(file_path):
-                raise FileNotFoundError("File %s doesn't exist" % str(file_path))
-            load_hdf5_weights(file_path=file_path,
+    def load_weights(self, filepath, allow_skip=False, prefix=''):
+        from tensorlib.saving.utils import load_hdf5_weights, load_ckpt_weights, is_hdf5_format
+        if not os.path.exists(filepath):
+            raise FileNotFoundError("File %s doesn't exist" % str(filepath))
+        if is_hdf5_format(filepath):
+            load_hdf5_weights(filepath=filepath,
                               lib_model=self,
                               allow_skip=allow_skip)
-        elif suffix.startswith('ckpt'):
-            load_checkpoint_weights(file_path=file_path,
-                                    lib_model=self,
-                                    prefixes=prefixes)
         else:
-            raise ValueError(
-                "File type must be 'hdf5' or 'ckpt', but received: %s" % suffix)
+            try:
+                load_ckpt_weights(filepath=filepath,
+                                  prefix=prefix)
+            except errors_impl.DataLossError:
+                raise ValueError(
+                    "File type must be 'hdf5', 'h5' or 'ckpt', but received: %s" % os.path.splitext(filepath)[-1])
 
-    def save_weights(self, file_path):
+    def save_weights(self, filepath):
         from tensorlib.saving.utils import save_hdf5_weights
-        suffix = file_path[file_path.rfind('.') + 1:]
+        suffix = filepath[filepath.rfind('.') + 1:]
         if suffix.startswith("hdf5") or suffix.startswith("h5"):
-            save_hdf5_weights(file_path=file_path, lib_model=self)
+            save_hdf5_weights(filepath=filepath, lib_model=self)
         elif suffix.startswith("ckpt"):
             pass
         else:

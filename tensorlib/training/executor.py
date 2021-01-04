@@ -38,11 +38,12 @@ class ExecutorMode(object):
 
 # noinspection PyArgumentList
 class ExecutorSpec(namedtuple('ExecutorSpec', [
-        'outputs', 'loss', 'metrics',
+        'outputs', 'feed_inputs', 'loss', 'metrics',
         'params', 'train_hooks', 'val_hooks'])):
 
     def __new__(cls,
                 outputs,
+                feed_inputs=None,
                 loss=None,
                 metrics=None,
                 params=None,
@@ -55,9 +56,11 @@ class ExecutorSpec(namedtuple('ExecutorSpec', [
             train_hooks = []
         if val_hooks is None:
             val_hooks = []
+        if feed_inputs is not None:
+            feed_inputs = to_list(feed_inputs)
         return super(ExecutorSpec, cls).__new__(
-            cls, outputs=outputs, loss=loss,
-            metrics=metrics, params=params,
+            cls, outputs=outputs, feed_inputs=feed_inputs,
+            loss=loss, metrics=metrics, params=params,
             train_hooks=train_hooks, val_hooks=val_hooks)
 
 
@@ -452,8 +455,7 @@ class Executor:
                 targets = None
             start = time.time()
             logging.info('=>Calling model_fn...')
-            result = self.model_fn(
-                inputs, targets)
+            result = self.model_fn(inputs, targets)
             logging.info('=>Finish calling model_fn...')
             if not isinstance(result, ExecutorSpec):
                 raise ValueError("Result returned from `model_fn` must be"
@@ -467,6 +469,15 @@ class Executor:
                          checkpoint_dir=self._checkpoint_dir,
                          **self._session_kwargs)
             logging.info("=>Finish compiling in %.4fs" % (time.time() - start))
+            # For topological graph model
+            if result.feed_inputs is not None:
+                feed_names = [placeholder.name for placeholder in result.feed_inputs]
+                feed_shapes = [placeholder.shape for placeholder in result.feed_inputs]
+                self.inputs = result.feed_inputs + self.inputs
+                self._input_names = feed_names + self._input_names
+                self._feed_inputs = result.feed_inputs + self._feed_inputs
+                self._feed_input_names = feed_names + self._feed_input_names
+                self._feed_input_shapes = feed_shapes + self._feed_input_shapes
             self.outputs = result.outputs
             self._uses_learning_phase = hasattr(
                 self.outputs[0], '_uses_learning_phase')

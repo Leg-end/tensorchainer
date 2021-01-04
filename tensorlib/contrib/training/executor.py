@@ -16,6 +16,52 @@ import tensorflow as tf
 # os.environ[“CUDA_VISIBLE_DEVICES”] = “0,1” #设置当前使用的GPU设备为0,1号两个设备,名称依次为'/gpu:0'、'/gpu:1'
 # os.environ[“CUDA_VISIBLE_DEVICES”] = “1,0” #设置当前使用的GPU设备为1,0号两个设备,名称依次为'/gpu:0'、'/gpu:1'。表示优先使用1号设备,然后使用0号设备
 
+"""
+def load_checkpoint_weights(file_path, lib_model, prefixes=None):
+    if prefixes is None:
+        prefixes = ''
+    prefixes = to_list(prefixes)
+    reader = _load_checkpoint(file_path)
+    weights = list(lib_model.weights)
+    vars_to_shape = reader.get_variable_to_shape_map()
+    restored_vars, skipped_vars, stated = _get_vars_to_restore(
+        weights, prefixes, vars_to_shape)
+    for prefix, num in stated.items():
+        logging.info("For the prefix '{0}' were found {1} weights".format(prefix, num))
+    try:
+        train.init_from_checkpoint(file_path, restored_vars)
+        logging.info("Values were loaded for {} tensors!".format(len(restored_vars.keys())))
+        logging.info("Values were not loaded for {} tensors:".format(len(skipped_vars)))
+        for var in skipped_vars:
+            logging.info("skip values {}".format(var))
+    except ValueError as exception:
+        logging.error("Weights was not loaded at all!")
+        logging.error(exception)
+        exit(1)
+        
+
+def _get_vars_to_restore(model_vars, prefixes, vars_to_shape):
+    restore_vars = dict()
+    skip_vars = []
+    state = dict()
+    for prefix in prefixes:
+        state[prefix] = 0
+    for var in model_vars:
+        name = var.name[:-2]
+        shape = var.shape.as_list()
+        skip_var = True
+        for prefix in prefixes:
+            name = name.replace(prefix, '')
+            if name in vars_to_shape and vars_to_shape[name] == shape:
+                restore_vars[name] = var
+                state[prefix] += 1
+                skip_var = False
+                break
+        if skip_var:
+            skip_vars.append(var)
+
+    return restore_vars, skip_vars, state
+"""
 
 class LoggerHook(tf.train.SessionRunHook):
     def __init__(self, learning_rate, log_frequency,
