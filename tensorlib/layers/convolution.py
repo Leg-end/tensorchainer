@@ -253,11 +253,11 @@ class Conv2DTranspose(Conv2D):
                                               **kwargs)
         if output_padding is not None:
             output_padding = normalize_tuple(output_padding, 2, 'output_padding')
-            for stride, out_pad in zip(self.strides, self.output_padding):
+            for stride, out_pad in zip(self.strides, output_padding):
                 if out_pad >= stride:
-                    raise ValueError('Stride ' + str(self.strides) + ' must be '
-                                                                     ' greater than output padding ' +
-                                     str(self.output_padding))
+                    raise ValueError('Stride ' + str(self.strides)
+                                     + ' must be greater than output padding '
+                                     + str(output_padding))
         else:
             output_padding = (None, None)
         self.output_padding = output_padding

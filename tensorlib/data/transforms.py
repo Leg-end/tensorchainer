@@ -99,19 +99,45 @@ class Affine(object):
                  target_size,
                  max_sum=None,
                  max_angle=None,
-                 border_value=0):
+                 border_value=0,
+                 method=F.ResizeMethod.BILINEAR):
         self.target_size = normalize_tuple(target_size, 2, 'target_size')
         self.max_sum = float(max_sum) if max_sum is not None else 80.
         self.max_angle = normalize_tuple(max_angle, 3, 'max_angle')\
             if max_angle is not None else (40, 40, 10)
         self.border_value = border_value
+        self.method = method
 
     def __call__(self, inputs):
-        pass
+        return F.random_affine(inputs, size=self.target_size,
+                               max_sum=self.max_sum,
+                               max_angle=self.max_angle,
+                               border_value=self.border_value,
+                               method=self.method)
 
 
 class Rotation(object):
-    pass
+    def __init__(self,
+                 target_size,
+                 angle_range=None,
+                 scale_range=None,
+                 offset_center=True,
+                 border_value=0,
+                 method=F.ResizeMethod.BILINEAR):
+        self.target_size = normalize_tuple(target_size, 2, 'target_size')
+        self.angle_range = angle_range if angle_range is not None else (-30, 30)
+        self.scale_range = scale_range if scale_range is not None else (0.8, 1.1)
+        self.offset_center = offset_center
+        self.border_value = border_value
+        self.method = method
+
+    def __call__(self, inputs):
+        return F.random_rotation(inputs, size=self.target_size,
+                                 angle_range=self.angle_range,
+                                 scale_range=self.scale_range,
+                                 offset_center=self.offset_center,
+                                 border_value=self.border_value,
+                                 method=self.method)
 
 
 class Compose(MutableSequence):

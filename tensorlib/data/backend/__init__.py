@@ -13,3 +13,9 @@ elif _BACKEND == 'tensorflow':
 
 def get_backend():
     return _BACKEND
+
+
+def set_backend(backend):
+    global _BACKEND
+    assert backend in ['opencv', 'tensorflow']
+    _BACKEND = backend

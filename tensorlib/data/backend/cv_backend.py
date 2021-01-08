@@ -1,17 +1,17 @@
-import math
 import random
 import numpy as np
 import cv2
 import io
 import base64
+import math
 from PIL import Image
-
 
 __all__ = ['imread', 'imwrite', 'keep_aspect_resize_padding',
            'keep_aspect_resize_points', 'resize_points', 'resize',
            'random_brightness', 'random_contrast', 'random_expand',
            'random_hue', 'random_saturation', 'ResizeMethod',
-           'crop_resize', 'random_flip', 'crop_resize_points']
+           'crop_resize', 'random_flip', 'random_affine',
+           'random_rotation', 'crop_resize_points']
 
 
 class ResizeMethod:
@@ -153,7 +153,7 @@ def keep_aspect_resize_padding(
         h = resize_img.shape[0]
         if random_seed:
             random.seed(random_seed)
-            padding = random.randint(0, resize_height-h)
+            padding = random.randint(0, resize_height - h)
         else:
             padding = math.floor((resize_height - h) / 2.0)
         resize_img = cv2.copyMakeBorder(src=resize_img, top=padding, bottom=resize_height - h - padding, left=0,
@@ -164,7 +164,7 @@ def keep_aspect_resize_padding(
         w = resize_img.shape[1]
         if random_seed:
             random.seed(random_seed)
-            padding = random.randint(0, resize_width-w)
+            padding = random.randint(0, resize_width - w)
         else:
             padding = math.floor((resize_width - w) / 2.0)
         resize_img = cv2.copyMakeBorder(src=resize_img, top=0, bottom=0, left=padding,
@@ -294,7 +294,8 @@ def random_affine(
         size,
         max_sum,
         max_angle,
-        border_value):
+        border_value,
+        method=ResizeMethod.BILINEAR):
     max_angle = np.array(max_angle, np.float32)
     angles = np.random.rand(3) * max_angle
     if np.sum(angles) > max_sum:
@@ -303,6 +304,48 @@ def random_affine(
     ih, iw = image.shape[:2]
     coord = np.array([[0, iw, iw, 0], [0, 0, ih, ih]], dtype=np.float32)
     t_matrix = offset_transform(h, w, coord)
+    h_matrix = perspective_transform(h, w, angles=angles)
+    affine_matrix = np.matmul(h_matrix, t_matrix)
+
+    image = cv2.warpPerspective(image, affine_matrix,
+                                (w, h),
+                                borderValue=border_value,
+                                flags=method)
+    return image
+
+
+def random_rotation(
+        image,
+        size,
+        angle_range=None,
+        scale_range=None,
+        offset_center=True,
+        border_value=0,
+        method=ResizeMethod.BILINEAR):
+    h, w = size
+    t_matrix = _rotation_matrix(angle_range, scale_range)
+    if offset_center:
+        t_matrix = _t_matrix_offset_center(t_matrix, h, w)
+    image = cv2.warpAffine(image, t_matrix[0:2, :], (w, h),
+                           flags=method, borderValue=border_value)
+    return image
+
+
+def _t_matrix_offset_center(matrix, y, x):
+    _x = (x - 1) / 2.0
+    _y = (y - 1) / 2.0
+    offset_matrix = np.array([[1, 0, _x], [0, 1, _y], [0, 0, 1]])
+    reset_matrix = np.array([[1, 0, -_x], [0, 1, -_y], [0, 0, 1]])
+    transform_matrix = np.dot(np.dot(offset_matrix, matrix), reset_matrix)
+    return transform_matrix
+
+
+def _rotation_matrix(angle=(-30, 30), scale_range=(0.6, 1.1)):
+    rads = np.pi / 180 * np.random.uniform(angle[0], angle[1])
+    scale = np.random.uniform(scale_range[0], scale_range[1])
+    r_matrix = np.array([[np.cos(rads), np.sin(rads), 0], [-np.sin(rads), np.cos(rads), 0], [0, 0, 1]])
+    s_matrix = np.array([[scale, 0, 0], [0, scale, 0], [0, 0, 1]])
+    return r_matrix.dot(s_matrix)
 
 
 def offset_transform(target_h, target_w, points, wh_ratio=.7):
@@ -319,6 +362,34 @@ def offset_transform(target_h, target_w, points, wh_ratio=.7):
     return t_matrix
 
 
+def perspective_transform(h, w, zcop=1000., dpp=1000., angles=None):
+    if angles is None:
+        angles = np.asarray([0., 0., 0.])
+
+    rads = np.deg2rad(angles)
+
+    r_x = np.mat([[1, 0, 0], [0, math.cos(rads[0]), math.sin(rads[0])],
+                  [0, -math.sin(rads[0]), math.cos(rads[0])]])
+    r_y = np.mat([[math.cos(rads[1]), 0, -math.sin(rads[1])], [0, 1, 0],
+                  [math.sin(rads[1]), 0, math.cos(rads[1])]])
+    r_z = np.mat([[math.cos(rads[2]), math.sin(rads[2]), 0],
+                  [-math.sin(rads[2]), math.cos(rads[2]), 0], [0, 0, 1]])
+    r = r_x * r_y * r_z
+
+    xyz = np.mat([[0, 0, w, w], [0, h, 0, h], [0, 0, 0, 0]])
+    hxy = np.mat([[0, 0, w, w], [0, h, 0, h], [1, 1, 1, 1]])
+    xyz = xyz - np.mat([[w], [h], [0]]) / 2.
+    xyz = r * xyz
+
+    xyz = xyz - np.mat([[0], [0], [zcop]])
+    h_xyz = np.concatenate([xyz, np.ones([1, 4])])
+    p = np.mat([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1. / dpp, 0]])
+    _hxy = p * h_xyz
+    _hxy = _hxy / _hxy[2, :]
+    _hxy = _hxy + np.mat([[w], [h], [0]]) / 2.
+    return get_t_matrix(points=hxy, t_points=_hxy)
+
+
 def _get_rect_points(tl_x, tl_y, br_x, br_y):
     return np.mat([[tl_x, br_x, br_x, tl_x],
                    [tl_y, tl_y, br_y, br_y],
@@ -331,10 +402,10 @@ def get_t_matrix(points, t_points):
         x = points[:, i].T
         y = t_points[:, i]
 
-        matrix[i*2, 3:6] = -y[2] * x
-        matrix[i*2, 6:] = y[1] * x
-        matrix[i*2+1, :3] = y[2] * x
-        matrix[i*2+1, 6:] = -y[0] * x
+        matrix[i * 2, 3:6] = -y[2] * x
+        matrix[i * 2, 6:] = y[1] * x
+        matrix[i * 2 + 1, :3] = y[2] * x
+        matrix[i * 2 + 1, 6:] = -y[0] * x
     _, _, v = np.linalg.svd(matrix)
     h = v[-1, :].reshape([3, 3])
     return h

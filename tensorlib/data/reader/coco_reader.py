@@ -236,7 +236,7 @@ def generate_demo_ann(data_dir, data_type, num=100, year=2014, division='train',
                  'annotations': anns, 'categories': categories}
     target_path = os.path.join(data_dir, 'annotations',
                                data_type + '_demo{:d}.json'.format(year))
-    json.dump(demo_coco, open(target_path, 'w'))
+    json.dump(demo_coco, open(target_path, 'w'), indent=2)
 
 
 def demo():
