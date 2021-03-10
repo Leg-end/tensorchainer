@@ -15,12 +15,12 @@ from tensorflow.python.framework import ops as fops
 from tensorflow.python.framework import errors_impl
 from tensorflow.python.ops import variables
 from tensorflow.python.util.function_utils import tf_inspect
-from tensorflow.python.util import nest
 
 from tensorlib import activation_ops
 from tensorlib.engine import base_hook
 from tensorlib.hooks import layer_hook
 from tensorlib.engine import base_lib as F
+from tensorlib.utils import nest
 from tensorlib.utils.generic_util import unpack_singleton, validate_kwargs, to_list
 from tensorlib.engine.name_manager import to_snake_case, get_unique_name
 from tensorlib import initializers
@@ -79,8 +79,20 @@ class Layer(object):
         return self._local_hooks
 
     @property
+    def mirrors(self):
+        return self._mirrors
+
+    @property
+    def input(self, index=0):
+        return self._get_mirror_attribute_at(index, 'input_tensors')
+
+    @property
+    def output(self, index=0):
+        return self._get_mirror_attribute_at(index, 'output_tensors')
+
+    @property
     def built(self):
-        return getattr(self, '_build', False)
+        return self._built
 
     @built.setter
     def built(self, value):
@@ -91,6 +103,7 @@ class Layer(object):
         self._non_trainable_weights = []
         self._local_hooks = OrderedDict()
         self._built = False
+        self._mirrors = []  # nodes presented as mirrors of this layer
         self.activation = activation_ops.get(activation)
         validate_kwargs(kwargs, {'dtype', 'name', '__config__', 'trainable'})
         # For serialization, recorded params in __init__
@@ -117,21 +130,39 @@ class Layer(object):
                 to_snake_case(self.__class__.__name__),
                 zero_based=zero_based)
         # (Note: when name is '', no name scope will be used)
+        # layers inside this layer will be flatten in graph
         self.name = name
 
     @contextlib.contextmanager
     def _name_scope(self):
+        """
+        Note: when name is '', no name scope will be used
+        layers inside this layer will be flatten in graph
+        """
         if self.name is '':
             yield
         else:
             with ops.name_scope(self.name) as scope:
                 yield scope
 
+    def _get_mirror_attribute_at(self, index, attr_name):
+        if not self._mirrors:
+            raise RuntimeError('The layer has never been called '
+                               'and thus has no defined ' + attr_name + '.')
+        if index > len(self._mirrors):
+            raise ValueError('Asked to get ' + attr_name + ' at mirror ' +
+                             str(index) + ', but the layer has only ' +
+                             str(len(self._mirrors)) + ' mirrors.')
+        return unpack_singleton(getattr(self._mirrors[index], attr_name))
+
     def check_define_before_run(self):
         if self.built:
-            raise RuntimeError("Can only change layers inside %s after %s's `__call__`"
+            raise RuntimeError("Can only change layers inside %s before %s's `__call__`"
                                " or `build` was invoked, you should define before running." % (
                                 self.name, self.name))
+
+    def add_mirror(self, node):
+        self._mirrors.append(node)
 
     def add_weight(self,
                    name,
@@ -195,15 +226,16 @@ class Layer(object):
     def build(self, *args, **kwargs):
         self.built = True
 
-    def forward(self, *args, **kwargs):
+    def forward(self, *inputs, **kwargs):
         raise NotImplementedError
 
     def __call__(self, *inputs, **kwargs):
-        inputs = list(inputs)
-        hooks = OrderedDict(self.local_hooks, **tensorlib._get_hooks())
+        inputs = to_list(inputs)
+        # self.local_hooks execute at last term
+        hooks = OrderedDict(tensorlib._get_hooks(), **self.local_hooks)
         hooks = hooks.values()
         for hook in hooks:
-            hook.before_forward(self, inputs, kwargs)
+            hook.before_forward(self, inputs, **kwargs)
         with self._name_scope():
             if not self.built:
                 self.build(unpack_singleton(
@@ -215,7 +247,7 @@ class Layer(object):
             unpack = not isinstance(outputs, (list, tuple))
             outputs = to_list(outputs)
         for hook in hooks:
-            hook.after_forward(self, outputs, inputs, kwargs)
+            hook.after_forward(self, outputs, inputs, **kwargs)
         if unpack:
             outputs = outputs[0]
         return outputs
@@ -323,6 +355,9 @@ class LayerList(Layer, MutableSequence):
         super(LayerList, self).__init__(**kwargs)
         self._children = []
         for layer in layers:
+            if not isinstance(layer, Layer):
+                raise TypeError("Expect type `Layer`, but"
+                                " receive %s" % str(type(layer)))
             self.add_layer(layer)
 
     def __len__(self):

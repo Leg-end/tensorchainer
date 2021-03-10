@@ -1,4 +1,20 @@
-from tensorflow.python.util import nest
+from tensorflow.python.util import nest as tf_nest
+
+
+def map_structure(func, *structure, inplace=False, **kwargs):
+    """
+    Same function as tensorflow.python.util.nest.map_structure
+    but with tiny difference defined by `inplace`
+    if inplace is False, totally same as tensorflow.python.util.nest.map_structure
+    otherwise, results after `func` will be placed in `structure[0]`
+    as original structure with no return term.
+    """
+    outputs = tf_nest.map_structure(func, *structure, **kwargs)
+    if not inplace:
+        return outputs
+    else:
+        for i, item in enumerate(outputs):
+            structure[0][i] = item
 
 
 def nest_indices(structure, start=0):
@@ -12,7 +28,7 @@ def nest_indices(structure, start=0):
 
 
 def index_to_structure(items, indices):
-    return nest.map_structure(lambda x: items[x], indices)
+    return tf_nest.map_structure(lambda x: items[x], indices)
 
 
 def flatten_list(structure):
@@ -30,35 +46,8 @@ def flatten_dict(structure):
             for x in flatten_dict(value):
                 yield x
         else:
-            yield value
+            yield key, value
 
 
-"""if __name__ == '__main__':
-    from tensorflow.python.util import nest
-    from tensorlib.utils import flatten_list
-    class Num:
-        def __init__(self, v):
-            self.v = v
-        def __repr__(self):
-            return str(self.v)
-    a = [Num(1), Num(2), Num(3), [Num(4), Num(5)]]
-    b = set(nest.flatten(a))
-    for x in b:
-        x.v = 1
-    print(a)
-    c = [(1, '1'), [(2, '2'), (3, '3')]]
-    def fn(n):
-        print(n)
-        return n
-    print(nest.map_structure(fn, c))
-
-
-    def _struct_indices(ids, start=0):
-        indices = []
-        for i, idx in enumerate(ids):
-            if isinstance(idx, list):
-                indices.append(_struct_indices(idx, start=indices[-1]))
-            else:
-                indices.append(i + start)
-        return indices
-    print(_struct_indices([1, 2, [3, 4]]))"""
+def flatten(structure):
+    return tf_nest.flatten(structure)

@@ -146,12 +146,24 @@ class StructureTest(tf.test.TestCase):
 
     def test_nan(self):
         import numpy as np
-        inputs = tf.ones((1, 2), dtype=tf.float32) * np.nan
+        ph = tf.placeholder(dtype=tf.float32, shape=(1, 2))
+        inputs = ph * np.nan
         with lib.hooks.NumericHook():
             outputs = lib.layers.Dense(units=3)(inputs)
         with self.cached_session() as sess:
             sess.run(tf.global_variables_initializer())
-            i, o = sess.run([inputs, outputs])
+            i, o = sess.run([inputs, outputs], feed_dict={ph: np.ones((1, 2))})
+        print(i)
+        print(o)
+
+    def test_num_scale(self):
+        import numpy as np
+        inputs = tf.placeholder(dtype=tf.float32, shape=(None, 4))
+        with lib.hooks.NumericScaleHook():
+            outputs = lib.layers.Dense(units=3)(inputs)
+        with self.cached_session() as sess:
+            sess.run(tf.global_variables_initializer())
+            i, o = sess.run([inputs, outputs], feed_dict={inputs: np.random.randn(10, 4)})
         print(i)
         print(o)
 

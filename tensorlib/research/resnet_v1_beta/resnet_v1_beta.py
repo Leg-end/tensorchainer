@@ -127,17 +127,10 @@ class ResNetV1Beta(lib.engine.Network):
                  is_training=None,
                  base_only=False,
                  global_pool=True,
-                 extract_blocks=None,
                  output_stride=None,
                  root_block=None,
                  **kwargs):
         super(ResNetV1Beta, self).__init__(**kwargs)
-        if extract_blocks is not None:
-            extract_blocks = lib.utils.to_list(extract_blocks)
-            self.extract_hook = lib.hooks.ExtractHook(
-                out_names=extract_blocks, prefix=self.name)
-        else:
-            self.extract_hook = lib.hooks.EmptyHook()
         if not base_only and output_stride not in [32, None]:
             raise ValueError("As the `base_only` is set to `False`, `output_stride` can only be 32 or None, "
                              "but given %d." % output_stride)
@@ -152,32 +145,31 @@ class ResNetV1Beta(lib.engine.Network):
                 [lib.layers.BatchNorm], trainable=is_training)
         else:
             arg_scope = lib.engine.arg_scope([])
-        with self.extract_hook:
-            with arg_scope:
-                if root_block is None:
-                    self.conv1 = resnet_v1_utils.conv2d_same(
-                        out_channels=64, kernel_size=7,
-                        stride=2, name='conv1')
-                else:
-                    self.conv1 = root_block
-                self.pool1 = lib.layers.MaxPool2D(
-                    kernel_size=3, strides=2,
-                    padding='SAME', name='pool1')
-                self.stack_blocks_dense(blocks, 64, output_stride)
-                if not base_only:
-                    if global_pool:
-                        self.gpool = lib.layers.GlobalAvgPool(name='pool5')
-                    if num_classes is not None:
-                        self.logits = lib.contrib.WSConv2D(
-                            out_channels=num_classes,
-                            kernel_size=1,
-                            activation=None,
-                            normalizer=None,
-                            use_weight_standardization=False,
-                            name='logits')
-                        self.sp_squeeze = lib.layers.Lambda(
-                            lambda x: tf.squeeze(x, axis=[1, 2]),
-                            name='spatial_squeeze')
+        with arg_scope:
+            if root_block is None:
+                self.conv1 = resnet_v1_utils.conv2d_same(
+                    out_channels=64, kernel_size=7,
+                    stride=2, name='conv1')
+            else:
+                self.conv1 = root_block
+            self.pool1 = lib.layers.MaxPool2D(
+                kernel_size=3, strides=2,
+                padding='SAME', name='pool1')
+            self.stack_blocks_dense(blocks, 64, output_stride)
+            if not base_only:
+                if global_pool:
+                    self.gpool = lib.layers.GlobalAvgPool(name='pool5')
+                if num_classes is not None:
+                    self.logits = lib.contrib.WSConv2D(
+                        out_channels=num_classes,
+                        kernel_size=1,
+                        activation=None,
+                        normalizer=None,
+                        use_weight_standardization=False,
+                        name='logits')
+                    self.sp_squeeze = lib.layers.Lambda(
+                        lambda x: tf.squeeze(x, axis=[1, 2]),
+                        name='spatial_squeeze')
 
     def stack_blocks_dense(self, blocks, in_channels, output_stride=None):
         current_stride = 4
@@ -212,8 +204,6 @@ class ResNetV1Beta(lib.engine.Network):
         outputs = self.conv1(inputs)
         outputs = self.pool1(outputs)
         outputs = self.bottlenecks(outputs)
-        if isinstance(self.extract_hook, lib.hooks.ExtractHook):
-            return self.extract_hook.get_extract()[1]
         if not self.base_only:
             if self.global_pool:
                 outputs = self.gpool(outputs)
@@ -221,6 +211,46 @@ class ResNetV1Beta(lib.engine.Network):
                 outputs = self.logits(outputs)
                 outputs = self.sp_squeeze(outputs)
         return outputs
+
+
+def _ResNetV1Beta(blocks,
+                  num_classes=None,
+                  is_training=None,
+                  global_pool=False,
+                  base_only=False,
+                  root_block=None,
+                  output_stride=None,
+                  extract_blocks=None,
+                  input_shape=None,
+                  input_tensor=None,
+                  name=None):
+    if extract_blocks is not None:
+        if input_shape is None:
+            if input_tensor is None:
+                raise ValueError("You must provide either `input_shape` or"
+                                 " a traceable `input_tensor` to build graph")
+        with lib.hooks.ExtractHook(extract_blocks, prefix=name) as hook:
+            network = ResNetV1Beta(blocks=blocks,
+                                   num_classes=num_classes,
+                                   is_training=is_training,
+                                   global_pool=global_pool,
+                                   base_only=base_only,
+                                   output_stride=output_stride,
+                                   name=name)
+            inputs = lib.Input(input_tensor=input_tensor,
+                               input_shape=input_shape)
+            _ = network(inputs)
+            outputs = list(hook.get_endpoints().values())
+            return lib.Network(inputs=inputs, outputs=outputs, name=name + '/')
+    else:
+        return ResNetV1Beta(blocks=blocks,
+                            num_classes=num_classes,
+                            is_training=is_training,
+                            global_pool=global_pool,
+                            base_only=base_only,
+                            root_block=root_block,
+                            output_stride=output_stride,
+                            name=name)
 
 
 def ResNetV1_18(num_classes=None,
@@ -231,6 +261,8 @@ def ResNetV1_18(num_classes=None,
                 depth_multiplier=1,
                 output_stride=None,
                 extract_blocks=None,
+                input_shape=None,
+                input_tensor=None,
                 multi_grid=None,
                 name='resnet_v1_18'):
     if multi_grid is None:
@@ -250,14 +282,16 @@ def ResNetV1_18(num_classes=None,
         ResNet_V1_small_beta_block(
             'block3', base_depth=depth_func(256), num_units=2, stride=2),
         resnet_v1_utils.Block('block4', BasicBlock, block4_args)]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        global_pool=global_pool,
-                        base_only=base_only,
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         global_pool=global_pool,
+                         base_only=base_only,
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1Beta_18(num_classes=None,
@@ -269,6 +303,8 @@ def ResNetV1Beta_18(num_classes=None,
                     root_depth_multiplier=0.25,
                     output_stride=None,
                     extract_blocks=None,
+                    input_shape=None,
+                    input_tensor=None,
                     multi_grid=None,
                     name='resnet_v1_18'):
     if multi_grid is None:
@@ -288,16 +324,18 @@ def ResNetV1Beta_18(num_classes=None,
         ResNet_V1_small_beta_block(
             'block3', base_depth=depth_func(256), num_units=2, stride=2),
         resnet_v1_utils.Block('block4', BasicBlock, block4_args)]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        global_pool=global_pool,
-                        base_only=base_only,
-                        root_block=resnet_v1_utils.root_block(
-                            root_depth_multiplier),
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         global_pool=global_pool,
+                         base_only=base_only,
+                         root_block=resnet_v1_utils.root_block(
+                             root_depth_multiplier),
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1_50(num_classes=None,
@@ -308,6 +346,8 @@ def ResNetV1_50(num_classes=None,
                 depth_multiplier=1,
                 output_stride=None,
                 extract_blocks=None,
+                input_shape=None,
+                input_tensor=None,
                 multi_grid=None,
                 name='resnet_v1_50'):
     if multi_grid is None:
@@ -325,14 +365,16 @@ def ResNetV1_50(num_classes=None,
         resnet_v1_utils.Block('block4', Bottleneck, [
             {'depth': 2048, 'depth_bottleneck': depth_func(512), 'stride': 1,
              'unit_rate': rate} for rate in multi_grid])]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        base_only=base_only,
-                        global_pool=global_pool,
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         base_only=base_only,
+                         global_pool=global_pool,
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1Beta_50(num_classes=None,
@@ -343,6 +385,8 @@ def ResNetV1Beta_50(num_classes=None,
                     depth_multiplier=1,
                     output_stride=None,
                     extract_blocks=None,
+                    input_shape=None,
+                    input_tensor=None,
                     multi_grid=None,
                     name='resnet_v1_50'):
     if multi_grid is None:
@@ -360,15 +404,17 @@ def ResNetV1Beta_50(num_classes=None,
         resnet_v1_utils.Block('block4', Bottleneck, [
             {'depth': 2048, 'depth_bottleneck': depth_func(512), 'stride': 1,
              'unit_rate': rate} for rate in multi_grid])]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        base_only=base_only,
-                        global_pool=global_pool,
-                        root_block=resnet_v1_utils.root_block(),
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         base_only=base_only,
+                         global_pool=global_pool,
+                         root_block=resnet_v1_utils.root_block(),
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1_101(num_classes=None,
@@ -379,6 +425,8 @@ def ResNetV1_101(num_classes=None,
                  depth_multiplier=1,
                  output_stride=None,
                  extract_blocks=None,
+                 input_shape=None,
+                 input_tensor=None,
                  multi_grid=None,
                  name='resnet_v1_101'):
     if multi_grid is None:
@@ -396,14 +444,16 @@ def ResNetV1_101(num_classes=None,
         resnet_v1_utils.Block('block4', Bottleneck, [
             {'depth': 2048, 'depth_bottleneck': depth_func(512), 'stride': 1,
              'unit_rate': rate} for rate in multi_grid])]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        base_only=base_only,
-                        is_training=is_training,
-                        global_pool=global_pool,
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         base_only=base_only,
+                         is_training=is_training,
+                         global_pool=global_pool,
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1Beta_101(num_classes=None,
@@ -414,6 +464,8 @@ def ResNetV1Beta_101(num_classes=None,
                      depth_multiplier=1,
                      output_stride=None,
                      extract_blocks=None,
+                     input_shape=None,
+                     input_tensor=None,
                      multi_grid=None,
                      name='resnet_v1_101'):
     if multi_grid is None:
@@ -431,15 +483,17 @@ def ResNetV1Beta_101(num_classes=None,
         resnet_v1_utils.Block('block4', Bottleneck, [
             {'depth': 2048, 'depth_bottleneck': depth_func(512), 'stride': 1,
              'unit_rate': rate} for rate in multi_grid])]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        base_only=base_only,
-                        global_pool=global_pool,
-                        root_block=resnet_v1_utils.root_block(),
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         base_only=base_only,
+                         global_pool=global_pool,
+                         root_block=resnet_v1_utils.root_block(),
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1_152(num_classes=None,
@@ -450,6 +504,8 @@ def ResNetV1_152(num_classes=None,
                  depth_multiplier=1,
                  output_stride=None,
                  extract_blocks=None,
+                 input_shape=None,
+                 input_tensor=None,
                  name='resnet_v1_152'):
     depth_func = lambda d: max(int(d * depth_multiplier), min_base_depth)
     blocks = [
@@ -461,15 +517,17 @@ def ResNetV1_152(num_classes=None,
             'block3', base_depth=depth_func(256), num_units=36, stride=2),
         ResNet_V1_beta_block(
             'block4', base_depth=depth_func(512), num_units=3, stride=1)]
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        base_only=base_only,
-                        global_pool=global_pool,
-                        root_block=None,
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         base_only=base_only,
+                         global_pool=global_pool,
+                         root_block=None,
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 def ResNetV1_200(num_classes=None,
@@ -480,6 +538,8 @@ def ResNetV1_200(num_classes=None,
                  depth_multiplier=1,
                  output_stride=None,
                  extract_blocks=None,
+                 input_shape=None,
+                 input_tensor=None,
                  name='resnet_v1_200'):
     depth_func = lambda d: max(int(d * depth_multiplier), min_base_depth)
     blocks = [
@@ -492,18 +552,20 @@ def ResNetV1_200(num_classes=None,
         ResNet_V1_beta_block(
             'block4', base_depth=depth_func(512), num_units=3, stride=1)]
 
-    return ResNetV1Beta(blocks=blocks,
-                        num_classes=num_classes,
-                        is_training=is_training,
-                        base_only=base_only,
-                        global_pool=global_pool,
-                        output_stride=output_stride,
-                        extract_blocks=extract_blocks,
-                        name=name)
+    return _ResNetV1Beta(blocks=blocks,
+                         num_classes=num_classes,
+                         is_training=is_training,
+                         base_only=base_only,
+                         global_pool=global_pool,
+                         output_stride=output_stride,
+                         extract_blocks=extract_blocks,
+                         input_shape=input_shape,
+                         input_tensor=input_tensor,
+                         name=name)
 
 
 if __name__ == '__main__':
-    data = tf.ones((2, 224, 224, 3))
+    # data = tf.ones((2, 224, 224, 3))
     # with lib.engine.arg_scope(resnet_v1_utils.resnet_arg_scope()):
     #     model = ResNet_V1_101_beta((2, 224, 224, 3), num_classes=1000, is_training=True,
     #                                global_pool=True)
@@ -512,9 +574,13 @@ if __name__ == '__main__':
     #     for node in nodes:
     #         for weight in node.downstream_layer.weights:
     #             print(weight)
-    ext_blocks = ['pool1', 'block1/unit_2/lite_bottleneck_v1/add',
-                      'block2/unit_2/lite_bottleneck_v1/add',
-                      'block3/unit_2/lite_bottleneck_v1/add',
-                      'block4/unit_2/lite_bottleneck_v1/add']
-    model = ResNetV1_18(base_only=False)
-    print(model(data))
+    ext_blocks = ['pool1', 'block1/unit_2/add',
+                  'block2/unit_2/add',
+                  'block3/unit_2/add',
+                  'block4/unit_2/add']
+    model = ResNetV1_18(base_only=False, extract_blocks=ext_blocks,
+                        input_shape=(224, 224, 3))
+    print(model.outputs)
+    # print(model(data))
+    # writer = tf.summary.FileWriter("D:/GeekGank/workspace/graph/model_graph", tf.get_default_graph())
+    # writer.close()

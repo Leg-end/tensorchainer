@@ -146,7 +146,7 @@ class ResearchTest(tf.test.TestCase):
 
     def test_fpn(self):
         fpn = lib.research.FPNWrapper(
-            network=lib.research.ResNet_V1_18_beta(base_only=True),
+            network=lib.research.ResNetV1_18_beta(base_only=True),
             extract_blocks=['pool1', 'block1/unit_2/lite_bottleneck_v1/add',
                             'block2/unit_2/lite_bottleneck_v1/add',
                             'block3/unit_2/lite_bottleneck_v1/add',

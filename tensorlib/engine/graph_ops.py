@@ -1,9 +1,13 @@
 from tensorlib.utils.generic_util import to_list, unpack_singleton, has_arg
-from tensorlib.utils.nest import nest_indices, flatten_list
-from tensorflow.python.util import nest
+from tensorlib.utils import nest
+from collections import namedtuple
 import tensorlib
 
 from tensorflow.python import ops
+
+
+class History(namedtuple('History', ['node', 'tensor_index'])):
+    __slots__ = ()
 
 
 class Node(object):
@@ -11,12 +15,18 @@ class Node(object):
     def __init__(self,
                  layer,
                  in_degree,
-                 tensor_ids,
+                 tensor_indices,
+                 input_tensors,
+                 output_tensors,
                  arguments=None):
         self.layer = layer
+        layer.add_mirror(self)
+        self.name = layer.name + ':' + str(len(layer.mirrors))
         self.in_degree = in_degree
         self.out_degree = []
-        self.tensor_ids = tensor_ids  # nest struct
+        self.tensor_indices = tensor_indices  # nested (e.g. [[1, 2], 3])
+        self.input_tensors = input_tensors  # nested (e.g. [[1, 2], 3])
+        self.output_tensors = output_tensors  # nested (e.g. [[1, 2], 3])
         self.arguments = arguments or {}
         for node in self.in_degree:
             if node:
@@ -25,13 +35,11 @@ class Node(object):
     def __repr__(self):
         return self.layer.name
 
-    def __call__(self, *inputs):
-        inputs = nest.map_structure(
-            lambda x: inputs[x], nest_indices(self.tensor_ids))
+    def __call__(self, inputs):
         hooks = tensorlib._get_hooks()
         hooks = hooks.values()
         for hook in hooks:
-            hook.before_forward(self.layer, inputs, self.arguments)
+            hook.before_forward(self.layer, inputs, **self.arguments)
         with ops.name_scope(self.layer.name):
             outputs = self.layer.forward(*inputs, **self.arguments)
             # outputs return from __call__ should have same format
@@ -39,7 +47,7 @@ class Node(object):
             unpack = not isinstance(outputs, (list, tuple))
             outputs = to_list(outputs)
         for hook in hooks:
-            hook.after_forward(self.layer, outputs, inputs, self.arguments)
+            hook.after_forward(self.layer, outputs, inputs, **self.arguments)
         if unpack:
             outputs = outputs[0]
         return outputs
@@ -61,51 +69,50 @@ class GraphNetwork(object):
     def __init__(self,
                  network,
                  nodes,
-                 children,
-                 out_nodes,
-                 out_ids):
+                 children):
         self.network = network
         self.nodes = nodes
-        self.children = children
-        self.out_nodes = out_nodes
-        self.out_ids = out_ids
+        self.children = children  # topological order layers
 
     def __repr__(self):
         return str(self.nodes)
 
-    def __call__(self, *inputs):
-        # handle inputs according to its structure
+    def __call__(self, inputs):
+        # All feed operations do in flatten
         inputs = nest.flatten(inputs)
-        log = {node: [inputs[i] for i in nest.flatten(node.tensor_ids)]
-               for node in self.nodes[0]}
+        log = {str(id(x)): y for x, y in zip(nest.flatten(
+            self.network._nested_inputs), inputs)}
+        # Ignore the InputLayers when computing the graph.
         for d_nodes in self.nodes[1:]:
             for node in d_nodes:
-                log[node] = to_list(node(*[
-                    log[node.in_degree[i]][idx] for i, idx in enumerate(
-                        flatten_list(node.tensor_ids))]))
-        # export outputs according to its structure
-        outputs = [log[self.out_nodes[i]][idx]
-                   for i, idx in enumerate(flatten_list(self.out_ids))]
-        outputs = nest.map_structure(
-            lambda x: outputs[x], nest_indices(self.out_ids))
+                feed_tensors = nest.map_structure(
+                    lambda t: log[str(id(t))], node.input_tensors)
+                output_tensors = node(feed_tensors)
+                for x, y in zip(nest.flatten(
+                        node.output_tensors), nest.flatten(output_tensors)):
+                    log[str(id(x))] = y
+        # Export outputs according to its structure
+        outputs = nest.map_structure(lambda t: log[str(id(t))],
+                                     self.network._nested_inputs)
         return unpack_singleton(outputs)
 
 
 def build_graph_network(network, inputs, outputs):
+    inputs = to_list(inputs)
+    outputs = to_list(outputs)
     children = list()  # topological order
     nodes = set()
     # In order to maintain depth information of nodes,
     # we decide not to use topological structure to store nodes,
-    # instead, we use a nest list to store nodes depth-wise
+    # instead, we use a nested list to store nodes depth-wise
     nodes_by_depth = []
-    out_nodes = [getattr(x, '_anchor')[0] for x in flatten_list(outputs)]
-    out_ids = nest.map_structure(lambda x:  getattr(x, '_anchor')[1], outputs)
+    out_nodes = [getattr(x, '_history').node for x in nest.flatten_list(outputs)]
     for node in out_nodes:  # remove useless nodes in out_node's out_degree
         node.out_degree = list(set(node.out_degree) & set(out_nodes))
     cur_depth = []
     # Assume we already visited all current depth nodes' in-degree nodes
-    for tensor in flatten_list(inputs):
-        node = getattr(tensor, '_anchor')[0]
+    for tensor in nest.flatten_list(inputs):
+        node = getattr(tensor, '_history').node
         cur_depth.append(node)
         nodes |= set(node.in_degree)
     while cur_depth:
@@ -121,52 +128,22 @@ def build_graph_network(network, inputs, outputs):
         cur_depth = next_depth
     return GraphNetwork(network=network,
                         nodes=nodes_by_depth,
-                        children=children,
-                        out_nodes=out_nodes,
-                        out_ids=out_ids)
-
-
-# def build_graph_network(network, inputs, outputs):
-#     cur_depth = []
-#     for tensor in outputs:
-#         node = getattr(tensor, '_anchor')[0]
-#         node.out_degree.clear()
-#         cur_depth.append(node)
-#     stop_nodes = [getattr(tensor, '_anchor')[0] for tensor in inputs]
-#     node_by_depth = []
-#     nodes = set()
-#     children = set()
-#     depth = 0
-#     while cur_depth:
-#         next_depth = []
-#         node_by_depth.append([])
-#         for node in cur_depth:
-#             if node in nodes or any(n not in nodes for n in node.out_degree):
-#                 continue
-#             node_by_depth[depth].append(node)
-#             nodes.add(node)
-#             children.add(node.layer)
-#             if node in stop_nodes:
-#                 continue
-#             next_depth.extend(node.in_degree)
-#         cur_depth = next_depth
-#         depth += 1
-#     return GraphNetwork(network=network,
-#                         nodes=list(reversed(node_by_depth)),
-#                         children=children)
+                        children=children)
 
 
 def build_node(layer, inputs: (list, tuple), outputs: (list, tuple), arguments=None):
-    in_degree = [getattr(tensor, '_anchor', (None, None))[0]
-                 for tensor in flatten_list(inputs)]
+    in_degree = [getattr(tensor, '_history', History(None, 0)).node
+                 for tensor in nest.flatten_list(inputs)]
     uses_lp = any(getattr(tensor, '_uses_learning_phase', False)
-                  for tensor in flatten_list(inputs)) or has_arg(layer.forward, 'training')
-    tensor_ids = nest.map_structure(lambda x: getattr(
-        x, '_anchor', (None, None))[1], inputs)
+                  for tensor in nest.flatten_list(inputs)) or has_arg(layer.forward, 'training')
+    tensor_indices = nest.map_structure(lambda x: getattr(
+        x, '_history', History(None, 0)).tensor_index, inputs)
     node = Node(layer=layer,
                 in_degree=in_degree,
-                tensor_ids=tensor_ids,
+                tensor_indices=tensor_indices,
+                input_tensors=inputs,
+                output_tensors=outputs,
                 arguments=arguments)
-    for i, tensor in enumerate(flatten_list(outputs)):
-        setattr(tensor, '_anchor', (node, i))
+    for i, tensor in enumerate(nest.flatten_list(outputs)):
+        setattr(tensor, '_history', History(node, i))
         setattr(tensor, '_uses_learning_phase', uses_lp)

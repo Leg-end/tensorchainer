@@ -149,14 +149,15 @@ def is_tensor_traceable(x):
     if not is_tensor(x):
         raise TypeError("Expecting an instance of 'Tensor',"
                         "but received an instance of {}".format(str(type(x))))
-    return hasattr(x, '_anchor')
+    return hasattr(x, '_history')
 
 
 def assert_tensor_traceable(x):
     if not is_tensor_traceable(x):
-        raise AttributeError("Missing traceable information(node, idx) in tensor %s"
+        raise AttributeError("Missing attribute named `_history` (`graph_ops.History`"
+                             " represents traceable information(node, idx)) in tensor %s"
                              " which indicates this tensor is node ?'s idx-th output"
-                             " and use as bridge to build connections between nodes." % str(x))
+                             " and use as bridge to build topological graph." % str(x))
 
 
 def bool(tensor):
@@ -196,7 +197,13 @@ def dtype(x):
 
 
 def int_shape(tensor):
-    return tuple(tensor.get_shape().as_list())
+    try:
+        shape = tensor.shape
+        if not isinstance(shape, tuple):
+            shape = tuple(shape.as_list())
+        return shape
+    except ValueError:
+        return None
 
 
 def get_shape(tensor):
@@ -522,16 +529,18 @@ def bias_add(value, bias, data_format='NHWC'):
 
 def conv2d_transpose(x,
                      kernel,
-                     output_shape: tuple,
+                     output_shape,
                      strides=(1, 1),
                      padding='VALID',
                      data_format='NHWC',
                      dilation_rate=(1, 1)):
     strides = (1,) + strides + (1,) if data_format[-1] == 'C'\
         else (1, 1) + strides
+    # deconv's output_shape can not contain "None"
+    # if had "None", replace it with -1
     if output_shape[0] is None:
         batch = int_shape(x)[0]
-        output_shape = (batch if batch else -1,) + output_shape[1:]
+        output_shape = (batch if batch else -1,) + tuple(output_shape[1:])
     if dilation_rate == (1, 1):
         x = nn.conv2d_transpose(value=x,
                                 filter=kernel,

@@ -1,39 +1,18 @@
 from tensorlib.engine import base_hook
 from tensorflow.python import ops
-from tensorflow.python.ops import gen_array_ops
 from tensorlib.engine import graph_ops
-from tensorlib.engine import base_lib as F
 from tensorlib.utils.generic_util import to_list
-from tensorlib.utils.nest import flatten_list
+from tensorlib.utils.nest import flatten_list, map_structure
+from collections import OrderedDict
 import numpy as np
 
 
-def check_input(inputs):
-    """
-    check tensor in inputs
-    [a, [tensor(b), tensor(c)]] -> [tensor(a), [tensor(b), tensor(c)]]
-    """
-    for i, x in enumerate(inputs):
-        if x is None:
-            raise ValueError("None values not supported")
-        if not F.is_tensor(x):
-            if isinstance(x, list):
-                check_input(x)
-            elif isinstance(x, tuple):
-                inputs[i] = list(x)
-                check_input(inputs[i])
-            elif isinstance(x, (np.ndarray, float, int)):
-                inputs[i] = ops.convert_to_tensor(x)
-            else:
-                raise TypeError("Type of atom unit in inputs must be"
-                                " one of [np.ndarray, float, int, Tensor]"
-                                ", but received " + str(type(x)))
-        # elif not hasattr(x, '_anchor'):
-        #     raise ValueError("Missing attribute '_anchor' from %d tensor %s"
-        #                      " in inputs, which means missing previous"
-        #                      " connection anchor information and connections"
-        #                      " in graph-network will be broken. (Note that"
-        #                      " tensor should be computed from an instance of Layer)")
+def convert_non_tensor(x):
+    if x is None:
+        raise ValueError("None values not supported")
+    if isinstance(x, (np.ndarray, float, int)):
+        return ops.convert_to_tensor(x)
+    return x
 
 
 class EmptyHook(base_hook.Hook):
@@ -43,20 +22,20 @@ class EmptyHook(base_hook.Hook):
 class LocalHook(base_hook.Hook):
     name = 'LocalHook'
 
-    def before_forward(self, layer, inputs, kwargs):
-        check_input(inputs)
+    def before_forward(self, layer, inputs, **kwargs):
+        map_structure(convert_non_tensor, inputs, inplace=True)
 
-    def after_forward(self, layer, outputs, inputs, kwargs):
-        from tensorlib.engine.base_layer import LayerList
-        # Only a graph network or a simple layer can convert to a node
-        if hasattr(layer, '_graph') or not isinstance(layer, LayerList):
+    def after_forward(self, layer, outputs, inputs, *args, **kwargs):
+        # Only a named network or layer can convert to a node
+        # Cause a named network or layer can maintain a name scope
+        if layer.name:
             graph_ops.build_node(layer, inputs, outputs, kwargs)
 
 
 class RNNSpecHook(base_hook.Hook):
     name = 'RNNSpecHook'
 
-    def before_forward(self, layer, inputs, kwarg):
+    def before_forward(self, layer, inputs, **kwarg):
         states = inputs[1]
         state_size = to_list(layer.state_size)
         if len(states) != state_size:
@@ -73,57 +52,35 @@ class ExtractHook(base_hook.Hook):
     """
         Example:
             Code example::
-                hook = ExtractHook(in_names='input', out_names='conv2d2')
+                hook = ExtractHook(end_names=['input', 'conv2d2'])
                 with hook:
                     net = Input(...'input')
                     net = Conv2D(...'conv2d1')(net)
                     net = Conv2D(...'conv2d2')(net)
                     net = Dense(...'dense1')(net)
-                inputs, outputs = hook.get_extract()
-                network = Network(inputs=inputs, outputs=outputs)
+                endpoints = hook.get_endpoints()
+                network = Network(inputs=endpoints['input'], outputs=endpoints['conv2d2'])
     """
     name = 'ExtractHook'
 
-    def __init__(self, out_names, in_names=None, prefix=''):
-        self.in_names = [prefix + name for name in to_list(in_names)] if in_names else []
-        if out_names is None:
-            raise ValueError("Export layers' names can not be None")
-        self.out_names = [prefix + name for name in to_list(out_names)]
-        self._inputs = []
-        self._outputs = []
+    def __init__(self, end_names, prefix=''):
+        if not end_names:
+            raise ValueError("End points' names must be provided")
+        if prefix[-1] != '/':
+            prefix += '/'
+        self.end_names = [prefix + name for name in to_list(end_names)]
+        self.endpoints = OrderedDict()
 
-    def before_forward(self, layer, inputs, kwargs):
-        if self.in_names:
-            scope = ops.get_name_scope()
-            for tensor in flatten_list(inputs):
-                name = scope + '/' + layer.name
-                if name in self.in_names:
-                    self._inputs.append(tensor)
-                    self.in_names.remove(name)
+    def after_forward(self, layer, outputs, inputs, **kwargs):
+        scope = ops.get_name_scope()
+        for tensor in flatten_list(outputs):
+            name = scope + '/' + layer.name if scope else layer.name
+            if name in self.end_names:
+                self.endpoints[name] = tensor
 
-    def after_forward(self, layer, outputs, inputs, kwargs):
-        if self.out_names:
-            scope = ops.get_name_scope()
-            for tensor in flatten_list(outputs):
-                name = scope + '/' + layer.name
-                if name in self.out_names:
-                    self._outputs.append(tensor)
-                    self.out_names.remove(name)
-
-    def get_extract(self):
-        if len(self.in_names) != 0:
-            raise RuntimeError("Can not find input tensor(s) from [%s]"
-                               % ','.join(self.in_names))
-        if len(self.out_names) != 0:
-            raise RuntimeError("Can not find output tensor(s) from:\n%s"
-                               % '\n'.join(self.out_names))
-        return self._inputs, self._outputs
-
-
-class NumericHook(base_hook.Hook):
-    name = 'NumericHook'
-
-    def after_forward(self, layer, outputs, inputs, kwargs):
-        message = ops.get_name_scope() + '/' + layer.name
-        for i in range(len(outputs)):
-            outputs[i] = gen_array_ops.check_numerics(outputs[i], message=message)
+    def get_endpoints(self):
+        missed_names = set(self.end_names) - set(self.endpoints.keys())
+        if len(missed_names) > 0:
+            raise ValueError("Can not find tensor(s) from:\n%s"
+                             % '\n'.join(missed_names))
+        return self.endpoints

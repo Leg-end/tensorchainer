@@ -394,7 +394,7 @@ class SeparableConv(Conv):
                                         name='bias')
         self._built = True
 
-    def forward(self, *args, **kwargs):
+    def forward(self, *inputs, **kwargs):
         raise NotImplementedError
 
 

@@ -226,7 +226,8 @@ class SplitConv(lib.engine.Network):
                            'axis': 3},
                 name="split")
             self.conv_layers = lib.LayerList()
-            for i, out_size in enumerate(_split_divisible(out_channels, num_ways, divisible_by=divisible_by)):
+            for i, out_size in enumerate(_split_divisible(
+                    out_channels, num_ways, divisible_by=divisible_by)):
                 self.conv_layers.append(Conv2D(
                     in_channels=in_channels,
                     out_channels=out_size,

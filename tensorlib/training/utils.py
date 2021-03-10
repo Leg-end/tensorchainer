@@ -1,16 +1,49 @@
 import numpy as np
-from tensorflow.python import ops
+from tensorlib.utils import nest, to_list
 from tensorlib.training.sessions.core import Compiler, SaverTrigger
+from tensorlib.engine import base_lib as F
 
 
-def is_tensor(x):
-    return isinstance(x, getattr(ops, '_TensorLike')) or ops.is_dense_tensor_like(x)
+def placeholder_data(x, name, idx):
+    if isinstance(x, list):
+        x = np.asarray(x)
+        if x.ndim == 1:
+            x = np.expand_dims(x, 1)
+    if isinstance(x, np.ndarray):
+        shape = (None,) + x.shape[1:]
+        x = F.placeholder(
+            shape=shape, name=name+'_%d' % idx)
+
+
+def valid_data(data):
+    if data is None:
+        return []
+    if isinstance(data, dict):
+        data = [data[key] for key in list(sorted(data.keys()))]
+    else:
+        data = to_list(data)
+    if not all(isinstance(x, np.ndarray)
+               or F.is_tensor(x) for x in data):
+        raise ValueError("All elements should be instances"
+                         " of numpy.ndarray or tensorflow.Tensor, but"
+                         " received: " + str([type(x) for x in data]))
+    return data
+
+
+def nest_data(data, names, ori_data):
+    if isinstance(ori_data, dict):
+        return dict(zip(names, data))
+    elif isinstance(ori_data, (tuple, list)):
+        nest_indices = nest.nest_indices(ori_data)
+        return nest.map_structure(lambda i: data[i], nest_indices)
+    elif isinstance(ori_data, np.ndarray):
+        return data[0]
 
 
 def normalize_single_array(x):
     if x is None:
         return None
-    elif is_tensor(x):
+    elif F.is_tensor(x):
         shape = x.get_shape()
         if shape is None or shape[0] is None:
             raise ValueError(
@@ -61,7 +94,7 @@ def verify_and_normalize_data(data,
 
     if shapes:
         for i in range(len(names)):
-            if shapes[i] is not None and not is_tensor(data[i]):
+            if shapes[i] is not None and not F.is_tensor(data[i]):
                 data_shape = data[i].shape
                 shape = shapes[i]
                 if data[i].ndim != len(shape):
@@ -100,7 +133,7 @@ def check_num_samples(samples,
                       steps=None):
     if steps is not None and batch_size is not None:
         raise ValueError('When `steps` is set, the `batch_size` must be None')
-    if not samples or any(is_tensor(x) for x in samples):
+    if not samples or any(F.is_tensor(x) for x in samples):
         if steps is None:
             raise ValueError("When samples from symbolic tensors(e.g. Dataset), argument"
                              " `steps` must be specified instead of batch_size, cause"

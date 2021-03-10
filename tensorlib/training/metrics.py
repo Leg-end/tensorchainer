@@ -74,14 +74,15 @@ class Metric(Layer):
             aggregation=aggregation)
 
     def __call__(self, *args, **kwargs):
-        updates = to_list(self.update_state(*args, **kwargs))
-        with fops.control_dependencies(updates):
-            result = self.result()
-        # We are adding the metric object as metadata on every result tensor.
-        # This metric instance will later be used to reset variable state after
-        # each epoch of training.
-        for res in to_list(nest.flatten(result)):
-            setattr(res, '_metric_obj', self)
+        with ops.name_scope(self.name):
+            updates = to_list(self.update_state(*args, **kwargs))
+            with fops.control_dependencies(updates):
+                result = self.result()
+            # We are adding the metric object as metadata on every result tensor.
+            # This metric instance will later be used to reset variable state after
+            # each epoch of training.
+            for res in to_list(nest.flatten(result)):
+                setattr(res, '_metric_obj', self)
         return result
 
 

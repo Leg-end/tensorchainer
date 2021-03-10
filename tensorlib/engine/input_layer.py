@@ -1,6 +1,6 @@
 from tensorlib.engine.base_layer import Layer, param_tracker
-from tensorlib.engine.base_lib import placeholder
-from tensorlib.engine.graph_ops import build_node
+from tensorlib.engine.base_lib import placeholder, assert_tensor_traceable
+from tensorlib.engine.graph_ops import build_node, History
 from tensorflow.python.framework import tensor_shape
 
 __all__ = ["InputLayer", "Input"]
@@ -43,21 +43,17 @@ class InputLayer(Layer):
                     input_shape = tuple(input_shape.as_list())
                 elif isinstance(input_shape, int):
                     input_shape = (input_shape,)
-                batch_input_shape = (batch_size or 1,) + input_shape
+                batch_input_shape = (batch_size or None,) + input_shape
             input_tensor = placeholder(shape=batch_input_shape,
                                        dtype=dtype, name=self.name)
-            # input_tensor = ones(dtype=self.dtype)(batch_input_shape)
-        elif not hasattr(input_tensor, '_anchor'):
-            raise ValueError("To connect topological graphs, `input_tensor` must have attribute"
-                             " `_anchor` to specify preceding node's meta data.")
-        setattr(input_tensor, '_anchor', (None, 0))
+            setattr(input_tensor, '_history', History(None, 0))
+        assert_tensor_traceable(input_tensor)
         build_node(layer=self,
                    inputs=[input_tensor],
                    outputs=[input_tensor])
-        self.inputs = [input_tensor]
         self._built = True
 
-    def forward(self, inputs):
+    def forward(self, inputs, *args, **kwargs):
         return inputs
 
 
@@ -72,5 +68,5 @@ def Input(input_tensor=None,
                              batch_size=batch_size,
                              input_shape=input_shape,
                              input_tensor=input_tensor)
-    output = input_layer.inputs[0]
+    output = input_layer.input
     return output

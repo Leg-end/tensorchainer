@@ -86,7 +86,7 @@ def lsp2coco(data_dir):
                    "id": 1}]
     coco_format = {'info': info, 'images': imgs,
                    'annotations': anns, 'categories': categories}
-    target_path = os.path.join(data_dir, 'lsp_person_keypoints_train2010.json')
+    target_path = os.path.join(data_dir, 'lsp', 'annotations', 'person_keypoints_train2010.json')
     json.dump(coco_format, open(target_path, 'w'), indent=2)
 
 
@@ -172,5 +172,5 @@ def mpii2coco(data_dir, division='train'):
                    "keypoints": MPII_JOINTS, "id": 1}]
     coco_format = {'info': info, 'images': imgs,
                    'annotations': anns, 'categories': categories}
-    target_path = os.path.join(data_dir, 'mpii_person_keypoints_{}2014.json'.format(division))
+    target_path = os.path.join(data_dir, 'mpii', 'annotations', 'person_keypoints_{}2014.json'.format(division))
     json.dump(coco_format, open(target_path, 'w'), indent=2)

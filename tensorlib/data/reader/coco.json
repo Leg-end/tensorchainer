@@ -24,23 +24,23 @@
     [5, 7]
    ],
    "keypoints": [
-    "nose",
-    "left_eye",
-    "right_eye",
-    "left_ear",
-    "right_ear",
-    "left_shoulder",
-    "right_shoulder",
-    "left_elbow",
-    "right_elbow",
-    "left_wrist",
-    "right_wrist",
-    "left_hip",
-    "right_hip",
-    "left_knee",
-    "right_knee",
-    "left_ankle",
-    "right_ankle"
+    "nose", 0.26,
+    "left_eye", 0.25,
+    "right_eye", 0.25,
+    "left_ear", 0.35,
+    "right_ear", 0.35,
+    "left_shoulder", 0.79,
+    "right_shoulder", 0.79,
+    "left_elbow", 0.72,
+    "right_elbow", 0.72,
+    "left_wrist", 0.62,
+    "right_wrist", 0.62,
+    "left_hip", 1.07,
+    "right_hip", 1.07,
+    "left_knee", 0.87,
+    "right_knee", 0.87,
+    "left_ankle", 0.89,
+    "right_ankle", 0.89
    ],
    "id": 1
   }],
@@ -64,4 +64,85 @@
  "bbox":,
  "category_id":,
  "id":}
+"class_code": [person
+bicycle
+car
+motorbike
+aeroplane
+bus
+train
+truck
+boat
+traffic light
+fire hydrant
+stop sign
+parking meter
+bench
+bird
+cat
+dog
+horse
+sheep
+cow
+elephant
+bear
+zebra
+giraffe
+backpack
+umbrella
+handbag
+tie
+suitcase
+frisbee
+skis
+snowboard
+sports ball
+kite
+baseball bat
+baseball glove
+skateboard
+surfboard
+tennis racket
+bottle
+wine glass
+cup
+fork
+knife
+spoon
+bowl
+banana
+apple
+sandwich
+orange
+broccoli
+carrot
+hot dog
+pizza
+donut
+cake
+chair
+sofa
+pottedplant
+bed
+diningtable
+toilet
+tvmonitor
+laptop
+mouse
+remote
+keyboard
+cell phone
+microwave
+oven
+toaster
+sink
+refrigerator
+book
+clock
+vase
+scissors
+teddy bear
+hair drier
+toothbrush
+]
 }

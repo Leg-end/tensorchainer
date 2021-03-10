@@ -24,8 +24,8 @@ class Hook(object):
     def deleted(self, layer) -> None:
         pass
 
-    def before_forward(self, layer, args: (list, tuple), kwargs: dict) -> None:
+    def before_forward(self, layer, inputs, **kwargs) -> None:
         pass
 
-    def after_forward(self, layer, outputs, args: (list, tuple), kwargs: dict) -> None:
+    def after_forward(self, layer, outputs, inputs, **kwargs: dict) -> None:
         pass

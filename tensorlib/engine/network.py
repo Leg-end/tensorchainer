@@ -8,6 +8,7 @@ from tensorflow.python import ops
 from tensorlib.engine import graph_ops
 from tensorlib.engine import base_lib as F
 from tensorlib.utils.generic_util import to_list, object_list_uid, unpack_singleton
+from tensorlib.utils import nest
 import typing as tp
 
 __all__ = ["Network", "graph_scope"]
@@ -15,7 +16,6 @@ __all__ = ["Network", "graph_scope"]
 
 class GraphScope:
     def __init__(self, scope, inputs, outputs=None):
-
         self.scope = scope
         self._inputs = inputs
         self._outputs = outputs
@@ -93,34 +93,45 @@ class Network(Layer):
         self._children = set()
         self._graph = None
         self._output_tensor_cache = {}
+        self._nested_inputs = None
+        self._nested_outputs = None
         self.inputs = None
         self.outputs = None
         if inputs is not None and outputs is not None:
             super(Network, self).__init__(**kwargs)
-            inputs = to_list(inputs)
-            outputs = to_list(outputs)
-            [F.assert_tensor_traceable(x) for x in inputs + outputs]
-            self.inputs = inputs
-            self.outputs = outputs
+            self.inputs = to_list(nest.flatten(inputs))
+            self.outputs = to_list(nest.flatten(outputs))
+            [F.assert_tensor_traceable(x)
+             for x in self.inputs + self.outputs]
+            self._nested_inputs = inputs
+            self._nested_outputs = outputs
             self._graph = graph_ops.build_graph_network(self, inputs, outputs)
             self.built = True
         else:
-            keys = list(kwargs.keys())
+            keys = list(sorted(kwargs.keys()))
             for key in keys:
                 if isinstance(kwargs[key], Layer):
                     self.add_layer(key, kwargs.pop(key))
             super(Network, self).__init__(**kwargs)
 
     def __setattr__(self, name: str, value):
-        if isinstance(value, Layer) or (isinstance(value, (list, tuple)) and all(
-                isinstance(v, Layer) for v in value)):
-            if isinstance(value, (list, tuple)):
-                value = LayerList(*value, name='')
-            self.check_define_before_run()
-            if not hasattr(self, name) or not isinstance(getattr(self, name), Layer):
+        # Cause computation logic already fixed, we don't check "define before run"
+        if isinstance(value, Layer):
+            # Ignore Loss and Metric
+            if value.__class__.__base__.__name__ in ['Loss', 'Metric']:
+                pass
+            elif name not in self._children:
                 self._children.add(name)
-            else:
-                raise AttributeError("Layer named `%s` already existed" % name)
+            # Check whether have same direct superclass
+            elif not isinstance(value, getattr(self, name).__class__.__base__):
+                raise TypeError("Replacing an instance of %s with an instance"
+                                " of %s is not allowed." % (
+                                    getattr(self, name).__class__.__base__.__name__),
+                                value.__class.__base__.__name__)
+        elif isinstance(value, (list, tuple)) and len(value) > 0 and all(
+                isinstance(v, Layer) for v in value):
+            value = LayerList(*value, name='')
+            self._children.add(name)
         super(Network, self).__setattr__(name, value)
 
     def __delattr__(self, name: str):
@@ -142,10 +153,10 @@ class Network(Layer):
         :return: layer
         """
         if name is not None:
-            for layer in self.layers(skip_self=True):
-                if name == layer.name:
-                    return layer
-            raise KeyError("No such layer: " + name)
+            if name in self._children:
+                return getattr(self, name)
+            else:
+                raise KeyError("No such layer: " + name)
         if self._graph is None:
             raise ValueError("Topological index retrieving only available after"
                              " building a topological graph of this network: " + self.name)
@@ -184,6 +195,6 @@ class Network(Layer):
             if key in self._output_tensor_cache:
                 return self._output_tensor_cache[key]
             else:
-                outputs = self._graph(*inputs)
+                outputs = self._graph(inputs)
                 self._output_tensor_cache[key] = outputs
             return outputs
